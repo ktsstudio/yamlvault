@@ -54,3 +54,11 @@ env:
   RABBITMQ_USER: myapp_user
   RABBITMQ_PASS: rmq_super_password
 ```
+
+## Docker
+
+Also available as a docker image:
+
+```bash
+$ docker run ktshub/yamlvault 
+```
