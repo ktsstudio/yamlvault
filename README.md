@@ -41,6 +41,7 @@ env:
 
 Command:
 ```bash
+% export VAULT_TOKEN="your-vault-token"
 $ yamlvault decrypt --input ./vaules.yaml --output ./values.yaml.dec  
 ```
 
