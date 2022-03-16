@@ -27,6 +27,10 @@ func (v *Vaulter) RetrieveData(path string) (map[string]interface{}, error) {
 		return nil, err
 	}
 
+	if secret == nil {
+		return nil, nil
+	}
+
 	if secret.Data == nil || secret.Data["data"] == nil {
 		return nil, nil
 	}
