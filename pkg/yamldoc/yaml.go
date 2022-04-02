@@ -3,7 +3,9 @@ package yamldoc
 import (
 	"fmt"
 	"gopkg.in/yaml.v2"
+	"io"
 	"io/ioutil"
+	"os"
 )
 
 type YamlDoc struct {
@@ -12,8 +14,8 @@ type YamlDoc struct {
 
 type ValueTraverseFunc func(value interface{}) (interface{}, error)
 
-func New(path string) (*YamlDoc, error) {
-	contents, err := ioutil.ReadFile(path)
+func New(reader io.Reader) (*YamlDoc, error) {
+	contents, err := ioutil.ReadAll(reader)
 	if err != nil {
 		return nil, err
 	}
@@ -28,17 +30,43 @@ func New(path string) (*YamlDoc, error) {
 	}, nil
 }
 
-func (d *YamlDoc) Save(path string) error {
+func NewFromFile(path string) (*YamlDoc, error) {
+	if path == "-" {
+		return New(os.Stdin)
+	}
+	file, err := os.Open(path)
+	if err != nil {
+		return nil, err
+	}
+	defer file.Close()
+	return New(file)
+}
+
+func (d *YamlDoc) Save(writer io.Writer) error {
 	out, err := yaml.Marshal(d.data)
 	if err != nil {
 		return err
 	}
 
-	if err := ioutil.WriteFile(path, out, 0644); err != nil {
+	if _, err := writer.Write(out); err != nil {
 		return err
 	}
 
 	return nil
+}
+
+func (d *YamlDoc) SaveFile(path string) error {
+	if path == "-" {
+		return d.Save(os.Stdout)
+	}
+
+	file, err := os.Create(path)
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+
+	return d.Save(file)
 }
 
 func (d *YamlDoc) TraverseValues(f ValueTraverseFunc) error {

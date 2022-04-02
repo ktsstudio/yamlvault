@@ -16,7 +16,7 @@ var conf struct {
 var decryptCmd = &cobra.Command{
 	Use: "decrypt",
 	RunE: func(cmd *cobra.Command, args []string) error {
-		doc, err := yamldoc.New(conf.InputFile)
+		doc, err := yamldoc.NewFromFile(conf.InputFile)
 		if err != nil {
 			return err
 		}
@@ -35,7 +35,7 @@ var decryptCmd = &cobra.Command{
 			return err
 		}
 
-		if err := doc.Save(conf.OutputFile); err != nil {
+		if err := doc.SaveFile(conf.OutputFile); err != nil {
 			return err
 		}
 
@@ -46,8 +46,6 @@ var decryptCmd = &cobra.Command{
 func init() {
 	rootCmd.AddCommand(decryptCmd)
 
-	decryptCmd.PersistentFlags().StringVarP(&conf.InputFile, "input", "i", "", "Input file")
-	decryptCmd.PersistentFlags().StringVarP(&conf.OutputFile, "output", "o", "", "Output file")
-	_ = decryptCmd.MarkPersistentFlagRequired("input")
-	_ = decryptCmd.MarkPersistentFlagRequired("output")
+	decryptCmd.PersistentFlags().StringVarP(&conf.InputFile, "input", "i", "-", "Input file")
+	decryptCmd.PersistentFlags().StringVarP(&conf.OutputFile, "output", "o", "-", "Output file")
 }

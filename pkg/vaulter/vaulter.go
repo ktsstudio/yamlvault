@@ -31,16 +31,16 @@ func (v *Vaulter) RetrieveData(path string) (map[string]interface{}, error) {
 		return nil, nil
 	}
 
-	if secret.Data == nil || secret.Data["data"] == nil {
-		return nil, nil
+	var result map[string]interface{}
+	if data, ok := secret.Data["data"]; ok {
+		if data, ok := data.(map[string]interface{}); ok {
+			result = data
+		}
+	} else {
+		result = secret.Data
 	}
 
-	data, ok := secret.Data["data"].(map[string]interface{})
-	if !ok {
-		return nil, fmt.Errorf("data type assertion failed: %T %#v", secret.Data["data"], secret.Data["data"])
-	}
-
-	return data, nil
+	return result, nil
 }
 
 func (v *Vaulter) RetrieveStringKey(path, key string) (string, error) {
